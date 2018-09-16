@@ -15,7 +15,7 @@ class ProfileApiController @Inject()
 
   def registerUser = Action { implicit request =>
     val userData = request.body.asFormUrlEncoded
-    val newUser = new User( 1,
+    val newUser = new User( None,
       userData.get("Username").head,
       userData.get("Password").head,
       userData.get("First Name").head,

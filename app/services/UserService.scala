@@ -4,7 +4,6 @@ import javax.inject.{Inject, Singleton}
 
 import models.User
 import reactivemongo.bson.BSONObjectID
-import services.UserService
 import repositories.UserRepository
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,7 +15,7 @@ class UserService @Inject() (userRepository: UserRepository) (implicit ex: Execu
     userRepository.registerUser(user)
   }
 
-  def deleteUser(id: Int) = {
+  def deleteUser(id: Option[BSONObjectID]) = {
     userRepository.deleteUser(id)
   }
 
@@ -24,7 +23,7 @@ class UserService @Inject() (userRepository: UserRepository) (implicit ex: Execu
     userRepository.updateUserDetails(user)
   }
 
-  def findUserByID(userID: Int): Future[Option[User]] = {
+  def findUserByID(userID: Option[BSONObjectID]): Future[Option[User]] = {
     userRepository.findUserById(userID)
   }
 }
