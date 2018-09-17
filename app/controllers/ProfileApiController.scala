@@ -25,4 +25,9 @@ class ProfileApiController @Inject()
     val result = userService.registerUser(newUser)
     Redirect(routes.Application.index())
   }
+
+  def loginUser = Action { implicit request =>
+    val userData = request.body.asFormUrlEncoded
+    Redirect(routes.Application.index())
+  }
 }

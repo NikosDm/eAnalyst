@@ -5,6 +5,7 @@ import java.util.Date
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import reactivemongo.bson.BSONObjectID
+import reactivemongo.play.json._
 
 case class User(userID: Option[BSONObjectID] = None,
                 username: String,
@@ -16,16 +17,15 @@ case class User(userID: Option[BSONObjectID] = None,
 
 object User {
 
-  implicit val objectIdRead: Reads[Option[BSONObjectID]] =
-    (__ \ "$oid").read[String].map { oid =>
-      Option(BSONObjectID(oid))
-    }
+  implicit def optionUserFormat[BSONObjectID: Format]: Format[Option[BSONObjectID]] = new Format[Option[BSONObjectID]]{
+    override def reads(json: JsValue): JsResult[Option[BSONObjectID]] = json.validateOpt[BSONObjectID]
 
-  implicit val objectIdWrite: Writes[BSONObjectID] = new Writes[BSONObjectID] {
-    def writes(objectId: BSONObjectID): JsValue = Json.obj(
-      "$oid" -> objectId.stringify
-    )
+    override def writes(o: Option[BSONObjectID]): JsValue = o match {
+      case Some(t) ⇒ implicitly[Writes[BSONObjectID]].writes(t)
+      case None ⇒ JsNull
+    }
   }
+
   implicit val userRead: Reads[User] = (
     (JsPath \ "userID").read[Option[BSONObjectID]] and
       (JsPath \ "username").read[String] and
